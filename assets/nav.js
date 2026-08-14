@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* ---------- Hero slider ---------- */
+  /* ---------- Hero slider - FIXED FOR ALL DEVICES ---------- */
   var slider = document.querySelector('[data-slider]');
   if (slider) {
     var slides = Array.prototype.slice.call(slider.querySelectorAll('[data-slide]'));
@@ -54,9 +54,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var current = 0;
     var timer = null;
     var touchX = 0;
+    var isTransitioning = false;
 
     function renderProgress() {
-      if (!progressBar || reduceMotion) return;
+      if (!progressBar) return;
+      if (reduceMotion) {
+        progressBar.style.display = 'none';
+        return;
+      }
+      progressBar.style.display = 'block';
       progressBar.classList.remove('running');
       void progressBar.offsetWidth;
       progressBar.style.setProperty('--slide-duration', duration + 'ms');
@@ -64,6 +70,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function goTo(index) {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      
       current = (index + slides.length) % slides.length;
       slides.forEach(function (slide, i) {
         slide.classList.toggle('is-active', i === current);
@@ -71,11 +80,20 @@ document.addEventListener('DOMContentLoaded', function () {
       dots.forEach(function (dot, i) {
         dot.classList.toggle('is-active', i === current);
       });
+      
       renderProgress();
+      
+      setTimeout(function() {
+        isTransitioning = false;
+      }, 100);
     }
 
-    function next() { goTo(current + 1); }
-    function prev() { goTo(current - 1); }
+    function next() { 
+      if (!isTransitioning) goTo(current + 1); 
+    }
+    function prev() { 
+      if (!isTransitioning) goTo(current - 1); 
+    }
 
     function startAutoplay() {
       if (reduceMotion) return;
@@ -91,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
       startAutoplay();
     }
 
+    // Pause when tab isn't visible
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) {
         stopAutoplay();
@@ -99,13 +118,31 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    if (nextBtn) nextBtn.addEventListener('click', function () { next(); restartAutoplay(); });
-    if (prevBtn) prevBtn.addEventListener('click', function () { prev(); restartAutoplay(); });
+    // Button controls
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        next();
+        restartAutoplay();
+      });
+    }
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        prev();
+        restartAutoplay();
+      });
+    }
 
+    // Dot controls
     dots.forEach(function (dot, i) {
-      dot.addEventListener('click', function () { goTo(i); restartAutoplay(); });
+      dot.addEventListener('click', function () {
+        goTo(i);
+        restartAutoplay();
+      });
     });
 
+    // Swipe support on all touch devices
     slider.addEventListener('touchstart', function (e) {
       touchX = e.touches[0].clientX;
     }, { passive: true });
@@ -122,13 +159,32 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }, { passive: true });
 
+    // Keyboard support for accessibility
+    slider.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        next();
+        restartAutoplay();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prev();
+        restartAutoplay();
+      }
+    });
+
+    // Hover pause
     slider.addEventListener('mouseenter', stopAutoplay);
     slider.addEventListener('mouseleave', startAutoplay);
     slider.addEventListener('focusin', stopAutoplay);
     slider.addEventListener('focusout', startAutoplay);
 
+    // Initialize
     goTo(0);
-    startAutoplay();
+    
+    // Start autoplay after a brief delay to ensure everything is ready
+    setTimeout(function() {
+      startAutoplay();
+    }, 300);
   }
 
   /* ---------- Scroll reveal ---------- */
@@ -161,21 +217,36 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: true });
   }
 
-  /* ---------- Marquee infinite loop - pixel exact ---------- */
+  /* ---------- Marquee infinite loop - FIXED FOR ALL DEVICES ---------- */
   var marquee = document.querySelector('[data-marquee]');
-  if (marquee && !reduceMotion) {
+  if (marquee) {
     var inner = marquee.querySelector('.marquee-inner');
     var track = marquee.querySelector('.marquee-track');
-
-    function setLoop() {
-      if (!track) return;
-      var w = track.scrollWidth;
-      inner.style.setProperty('--marquee-w', w + 'px');
-      inner.classList.add('is-ready');
+    
+    // If reduce motion, just show static
+    if (reduceMotion) {
+      if (inner) {
+        inner.style.animation = 'none';
+        inner.style.opacity = '1';
+      }
+      return;
     }
 
-    setLoop();
+    function setLoop() {
+      if (!track || !inner) return;
+      var w = track.scrollWidth;
+      if (w > 0) {
+        inner.style.setProperty('--marquee-w', w + 'px');
+        inner.classList.add('is-ready');
+        // Ensure animation is running
+        inner.style.animation = 'marqueeScroll 25s linear infinite';
+      }
+    }
 
+    // Set initial width with a small delay to ensure rendering
+    setTimeout(setLoop, 100);
+
+    // Use ResizeObserver to handle font loading / content changes
     if (window.ResizeObserver) {
       var ro = new ResizeObserver(function () {
         setLoop();
@@ -183,13 +254,23 @@ document.addEventListener('DOMContentLoaded', function () {
       ro.observe(track);
     }
 
+    // Also recalc on window resize
     var resizeTimer;
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(setLoop, 200);
     });
 
+    // Also recalc on font loading
+    if (document.fonts) {
+      document.fonts.ready.then(function() {
+        setLoop();
+      });
+    }
+
+    // Reset animation on hover end to prevent stutter
     marquee.addEventListener('mouseleave', function () {
+      if (!inner) return;
       var currentAnimation = inner.style.animation;
       inner.style.animation = 'none';
       void inner.offsetWidth;

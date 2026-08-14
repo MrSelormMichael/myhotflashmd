@@ -33,7 +33,7 @@
 
 <section class="hero-slider" data-slider aria-roledescription="carousel" aria-label="Introduction">
 
-  <article class="slide is-active" data-slide>
+  <article class="slide is-active" data-slide data-zoom="in">
     <div class="slide-bg" aria-hidden="true">
       <img src="https://images.unsplash.com/photo-1489533119213-66a5cd877091?w=1600&h=900&fit=crop&crop=center" alt="Woman enjoying peaceful moment in nature" loading="lazy">
       <div class="slide-overlay"></div>
@@ -49,7 +49,7 @@
     </div>
   </article>
 
-  <article class="slide" data-slide>
+  <article class="slide" data-slide data-zoom="out">
     <div class="slide-bg" aria-hidden="true">
       <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=1600&h=900&fit=crop&crop=center" alt="Peaceful woman sleeping and resting well" loading="lazy">
       <div class="slide-overlay"></div>
@@ -65,7 +65,7 @@
     </div>
   </article>
 
-  <article class="slide" data-slide>
+  <article class="slide" data-slide data-zoom="in">
     <div class="slide-bg" aria-hidden="true">
       <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1600&h=900&fit=crop&crop=center" alt="Woman smiling and feeling empowered" loading="lazy">
       <div class="slide-overlay"></div>
@@ -120,21 +120,12 @@
       <span>Personalized Care Plans</span><span class="plain">&bull;</span>
       <span>NAMS Certified Provider</span><span class="plain">&bull;</span>
     </div>
-    <div class="marquee-track" aria-hidden="true">
-      <span>Board-Certified Care</span><span class="plain">&bull;</span>
-      <span>100% Telehealth</span><span class="plain">&bull;</span>
-      <span>Secure &amp; Confidential</span><span class="plain">&bull;</span>
-      <span>Flexible Scheduling</span><span class="plain">&bull;</span>
-      <span>Evidence-Based Treatment</span><span class="plain">&bull;</span>
-      <span>Personalized Care Plans</span><span class="plain">&bull;</span>
-      <span>NAMS Certified Provider</span><span class="plain">&bull;</span>
-    </div>
   </div>
 </div>
 
 <section>
   <div class="container">
-    <div class="section-head centered reveal">
+    <div class="section-head reveal" style="text-align:left; max-width:720px; margin-bottom:52px;">
       <span class="eyebrow">Why my hotflash MD</span>
       <h2>Menopause care that <em>actually listens</em></h2>
       <p>Too many women are told their symptoms are "just part of getting older." We take a different approach — rooted in current evidence, tailored to you.</p>
@@ -149,7 +140,7 @@
         <h3>Personalized Treatment</h3>
         <p>Every plan is built around your symptoms, history, and goals — not a one-size-fits-all script.</p>
       </div>
-      <div class="feature reveal" style="--delay:1">
+      <div class="feature reveal offset" style="--delay:1; transform: translateY(-12px);">
         <div class="icon-ring">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z"/>
@@ -209,6 +200,7 @@
   <div class="cta-aurora" aria-hidden="true"></div>
   <div class="container">
     <div class="cta-glass glass reveal">
+      <div class="glass-highlight"></div>
       <h2>You don't have to <em>white-knuckle</em> menopause.</h2>
       <p>Schedule a telehealth visit and start building a plan that actually fits your life.</p>
       <a href="https://calendly.com/renee-myhotflashmd/new-meeting" class="btn btn-primary" target="_blank" rel="noopener">Book Your Visit Now</a>
@@ -241,7 +233,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      &copy; 2026 my hotflash MD. All rights reserved.
+      &copy; 2026 my hotflash MD. All rights reserved. This site does not provide medical advice; information is for general educational purposes only.
     </div>
   </div>
 </footer>
