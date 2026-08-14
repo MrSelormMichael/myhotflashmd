@@ -9,16 +9,27 @@ document.addEventListener('DOMContentLoaded', function () {
   function closeMenu() {
     if (nav) nav.classList.remove('open');
     if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('menu-open');
+    document.body.style.overflow = '';
   }
 
   if (toggle && nav) {
     toggle.addEventListener('click', function () {
       var isOpen = nav.classList.toggle('open');
       toggle.setAttribute('aria-expanded', String(isOpen));
+      if (isOpen) {
+        document.body.classList.add('menu-open');
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.classList.remove('menu-open');
+        document.body.style.overflow = '';
+      }
     });
+
     nav.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', closeMenu);
     });
+
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closeMenu();
     });
@@ -39,9 +50,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var prevBtn = slider.querySelector('[data-slider-prev]');
     var nextBtn = slider.querySelector('[data-slider-next]');
     var progressBar = slider.querySelector('[data-slider-progress-bar]');
-    var duration = 6500;
+    var duration = 2000;
     var current = 0;
     var timer = null;
+    var touchX = 0;
 
     function renderProgress() {
       if (!progressBar || reduceMotion) return;
@@ -55,12 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
       current = (index + slides.length) % slides.length;
       slides.forEach(function (slide, i) {
         slide.classList.toggle('is-active', i === current);
-        var img = slide.querySelector('.slide-bg img');
-        if (img) {
-          img.style.animation = 'none';
-          void img.offsetWidth;
-          img.style.animation = 'sliderZoom 12s ease-in-out infinite alternate';
-        }
       });
       dots.forEach(function (dot, i) {
         dot.classList.toggle('is-active', i === current);
@@ -73,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function startAutoplay() {
       if (reduceMotion) return;
+      if (document.hidden) return;
       stopAutoplay();
       timer = setInterval(next, duration);
     }
@@ -84,11 +91,36 @@ document.addEventListener('DOMContentLoaded', function () {
       startAutoplay();
     }
 
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+      }
+    });
+
     if (nextBtn) nextBtn.addEventListener('click', function () { next(); restartAutoplay(); });
     if (prevBtn) prevBtn.addEventListener('click', function () { prev(); restartAutoplay(); });
+
     dots.forEach(function (dot, i) {
       dot.addEventListener('click', function () { goTo(i); restartAutoplay(); });
     });
+
+    slider.addEventListener('touchstart', function (e) {
+      touchX = e.touches[0].clientX;
+    }, { passive: true });
+
+    slider.addEventListener('touchend', function (e) {
+      var delta = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(delta) > 40) {
+        if (delta < 0) {
+          next();
+        } else {
+          prev();
+        }
+        restartAutoplay();
+      }
+    }, { passive: true });
 
     slider.addEventListener('mouseenter', stopAutoplay);
     slider.addEventListener('mouseleave', startAutoplay);
@@ -129,26 +161,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: true });
   }
 
-  /* ---------- Marquee infinite loop fix ---------- */
+  /* ---------- Marquee infinite loop - pixel exact ---------- */
   var marquee = document.querySelector('[data-marquee]');
   if (marquee && !reduceMotion) {
     var inner = marquee.querySelector('.marquee-inner');
-    var tracks = marquee.querySelectorAll('.marquee-track');
-    
-    // Ensure we have exactly 3 tracks for seamless infinite scroll
-    if (tracks.length < 3) {
-      var originalHTML = tracks[0].outerHTML;
-      for (var i = tracks.length; i < 3; i++) {
-        var clone = document.createElement('div');
-        clone.className = 'marquee-track';
-        clone.setAttribute('aria-hidden', 'true');
-        clone.innerHTML = tracks[0].innerHTML;
-        inner.appendChild(clone);
-      }
+    var track = marquee.querySelector('.marquee-track');
+
+    function setLoop() {
+      if (!track) return;
+      var w = track.scrollWidth;
+      inner.style.setProperty('--marquee-w', w + 'px');
+      inner.classList.add('is-ready');
     }
-    
-    // Reset animation on hover end to prevent stutter
-    marquee.addEventListener('mouseleave', function() {
+
+    setLoop();
+
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () {
+        setLoop();
+      });
+      ro.observe(track);
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(setLoop, 200);
+    });
+
+    marquee.addEventListener('mouseleave', function () {
       var currentAnimation = inner.style.animation;
       inner.style.animation = 'none';
       void inner.offsetWidth;
