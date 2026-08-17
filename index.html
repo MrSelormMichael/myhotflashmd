@@ -8,26 +8,7 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=20260815">
-
-<!-- INLINE FALLBACK: If nav.js doesn't load, this will show a visible alert -->
-<script>
-  console.log('🔥 Inline script running - nav.js should load after this');
-  window.__navJsLoaded = false;
-  
-  // Set a timeout to check if nav.js loaded
-  setTimeout(function() {
-    if (!window.__navJsLoaded) {
-      console.error('❌ nav.js FAILED TO LOAD!');
-      // Show a visible indicator in the page
-      var indicator = document.createElement('div');
-      indicator.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#ff0000;color:#fff;padding:10px 16px;border-radius:8px;font-family:sans-serif;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
-      indicator.textContent = '⚠️ nav.js failed to load - check console';
-      document.body.appendChild(indicator);
-    }
-  }, 2000);
-</script>
-
+<link rel="stylesheet" href="assets/style.css?v=20260817">
 </head>
 <body>
 
@@ -257,89 +238,6 @@
   </div>
 </footer>
 
-<!-- SCRIPT: Multiple loading strategies -->
-<script>
-  // Set this immediately so we know if the script below runs
-  window.__navJsLoading = true;
-  console.log('📦 About to load nav.js');
-</script>
-
-<!-- PRIMARY: Standard load with cache busting -->
-<script src="assets/nav.js?v=20260815"></script>
-
-<!-- FALLBACK: If the primary script didn't set the flag, load it again from a different path -->
-<script>
-  // Check if nav.js loaded
-  setTimeout(function() {
-    if (!window.__navJsLoaded) {
-      console.warn('⚠️ Primary nav.js load failed, trying fallback...');
-      
-      // Try loading via dynamic script tag
-      var fallbackScript = document.createElement('script');
-      fallbackScript.src = 'assets/nav.js?v=20260815-fallback';
-      fallbackScript.onload = function() {
-        console.log('✅ Fallback nav.js loaded');
-      };
-      fallbackScript.onerror = function() {
-        console.error('❌ Fallback nav.js also failed!');
-        // Show visible error
-        var errorDiv = document.createElement('div');
-        errorDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff0000;color:#fff;padding:20px;text-align:center;font-family:sans-serif;z-index:9999;';
-        errorDiv.innerHTML = '⚠️ <strong>JavaScript failed to load.</strong> Please check the console and refresh.';
-        document.body.prepend(errorDiv);
-      };
-      document.head.appendChild(fallbackScript);
-    }
-  }, 1000);
-</script>
-
-<!-- SECONDARY: Inline script with hardcoded slider as absolute fallback -->
-<script>
-  // If even the fallback fails, this will still run
-  console.log('🔄 Inline fallback script running');
-  
-  // Try to initialize slider directly if nav.js didn't
-  setTimeout(function() {
-    if (!window.__navJsLoaded) {
-      console.log('🔄 nav.js not loaded - using inline fallback for slider');
-      
-      // Simple slider fallback
-      var slider = document.querySelector('[data-slider]');
-      if (slider) {
-        var slides = slider.querySelectorAll('[data-slide]');
-        var currentSlide = 0;
-        
-        function showSlide(index) {
-          if (index < 0) index = slides.length - 1;
-          if (index >= slides.length) index = 0;
-          for (var i = 0; i < slides.length; i++) {
-            slides[i].classList.toggle('is-active', i === index);
-          }
-          currentSlide = index;
-        }
-        
-        // Auto-advance
-        setInterval(function() {
-          showSlide(currentSlide + 1);
-        }, 3000);
-        
-        // Arrow buttons
-        var nextBtn = slider.querySelector('[data-slider-next]');
-        var prevBtn = slider.querySelector('[data-slider-prev]');
-        if (nextBtn) nextBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          showSlide(currentSlide + 1);
-        });
-        if (prevBtn) prevBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          showSlide(currentSlide - 1);
-        });
-        
-        console.log('✅ Inline slider fallback activated');
-      }
-    }
-  }, 1500);
-</script>
-
+<script src="assets/nav.js?v=20260817"></script>
 </body>
 </html>
