@@ -1,4 +1,4 @@
-/* my hotflash MD — Complete Stylesheet with Final Fixes */
+/* my hotflash MD — Complete Stylesheet v3.0 */
 
 :root {
   --pink-light: #F6C3CF;
@@ -67,9 +67,28 @@ a:hover { text-decoration: underline; }
 .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 img { max-width: 100%; display: block; }
 
+/* ---------- REDUCE MOTION - EXCLUDING MARQUEE ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  
+  /* Apply to everything EXCEPT marquee */
+  *:not(.marquee-inner):not(.marquee-track) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Keep marquee visible but static */
+  .marquee-inner {
+    animation: none !important;
+    flex-wrap: nowrap !important;
+    width: auto !important;
+    opacity: 1 !important;
+  }
+  .marquee-track {
+    width: auto !important;
+    flex-shrink: 0 !important;
+  }
 }
 
 /* ---------- Scroll reveal ---------- */
@@ -218,16 +237,24 @@ section .btn-outline { color: var(--slate-dark) !important; border-color: var(--
 section .btn-outline::before { background: var(--slate-dark); }
 section .btn-outline:hover { color: #fff !important; }
 
+/* Pulse animation for CTA */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+.cta-glass .btn.pulse {
+  animation: pulse 1.5s ease 2;
+}
+
 /* ---------- Glass ---------- */
 .glass {
-  position: relative; /* FIXED: prevents grain overlay from escaping */
+  position: relative;
   background: var(--glass-dark);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid var(--glass-dark-border);
 }
 
-/* Grain overlay for glass - makes it feel designed/printed */
 .glass::after {
   content: "";
   position: absolute;
@@ -264,11 +291,19 @@ section .btn-outline:hover { color: #fff !important; }
   inset: 0;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.9s var(--ease), visibility 0.9s;
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease), visibility 0.9s;
   display: flex;
   align-items: center;
 }
-.slide.is-active { opacity: 1; visibility: visible; z-index: 2; }
+.slide.is-active { 
+  opacity: 1; 
+  visibility: visible; 
+  z-index: 2; 
+  transform: scale(1);
+}
+.slide:not(.is-active) {
+  transform: scale(1.02);
+}
 
 .slide-bg {
   position: absolute;
@@ -276,7 +311,6 @@ section .btn-outline:hover { color: #fff !important; }
   z-index: 0;
 }
 
-/* Unified photo grading - consistent color temp across all images */
 .slide-bg img {
   width: 100%;
   height: 100%;
@@ -284,7 +318,6 @@ section .btn-outline:hover { color: #fff !important; }
   filter: saturate(0.9) sepia(0.06) hue-rotate(-6deg);
 }
 
-/* Alternating zoom directions to prevent jump */
 .slide[data-zoom="in"] .slide-bg img {
   animation: sliderZoomIn 12s ease-in-out infinite alternate;
 }
@@ -308,7 +341,6 @@ section .btn-outline:hover { color: #fff !important; }
   z-index: 1;
 }
 
-/* Glass text background */
 .glass-text {
   background: rgba(30, 43, 46, 0.35);
   backdrop-filter: blur(12px) saturate(180%);
@@ -321,7 +353,6 @@ section .btn-outline:hover { color: #fff !important; }
   z-index: 2;
 }
 
-/* Grain overlay for glass-text */
 .glass-text::after {
   content: "";
   position: absolute;
@@ -456,7 +487,7 @@ section .btn-outline:hover { color: #fff !important; }
   letter-spacing: 0.06em;
 }
 
-/* ---------- Marquee (Pixel-Exact Infinite) ---------- */
+/* ---------- MARQUEE - FIXED ANIMATION ---------- */
 .marquee {
   background: var(--slate-dark);
   color: #fff;
@@ -470,7 +501,6 @@ section .btn-outline:hover { color: #fff !important; }
   display: flex;
   width: calc(var(--marquee-w) * 2);
   animation: marqueeScroll 25s linear infinite;
-  /* Fade in once measured to prevent flash */
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -501,13 +531,9 @@ section .btn-outline:hover { color: #fff !important; }
   font-weight: 500;
 }
 
+/* KEY FIX: Negative translate moves it LEFT */
 @keyframes marqueeScroll {
   to { transform: translateX(calc(var(--marquee-w) * -1)); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-inner { animation: none; flex-wrap: wrap; width: auto; opacity: 1; }
-  .marquee-track { width: auto; }
 }
 
 /* ---------- Sections ---------- */
@@ -537,7 +563,6 @@ section.alt { background: var(--ivory); }
   box-shadow: var(--shadow-lg);
 }
 
-/* Asymmetric offset - breaks the template grid feel */
 .feature.offset {
   transform: translateY(-12px);
 }
@@ -623,7 +648,6 @@ section.alt { background: var(--ivory); }
   background: var(--ink);
 }
 
-/* Liquid glass aurora */
 .cta-aurora {
   position: absolute;
   width: 60%;
@@ -650,7 +674,6 @@ section.alt { background: var(--ivory); }
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(255,255,255,0.05), var(--shadow-lg);
 }
 
-/* Glass highlight - specular reflection */
 .glass-highlight {
   position: absolute;
   inset: 0;
@@ -690,11 +713,6 @@ section.alt { background: var(--ivory); }
 }
 .blob-shape.variant-2 { border-radius: 48% 52% 42% 58% / 52% 48% 52% 48%; }
 .blob-shape.variant-3 { border-radius: 62% 38% 48% 52% / 58% 52% 48% 42%; }
-@media (max-width: 860px) { .blob-shape { border-radius: 50% 50% 50% 50%; } }
-@media (prefers-reduced-motion: reduce) {
-  .blob-shape img { transition: none; }
-  .blob-shape:hover img { transform: none; }
-}
 
 /* ---------- Page Hero ---------- */
 .page-hero {
@@ -908,61 +926,9 @@ a:focus-visible, button:focus-visible {
   }
 
   .main-nav {
-    display: none;
-    position: fixed; inset: 0; z-index: 200;
-    flex-direction: column; justify-content: center; align-items: center; gap: 40px;
-    background: rgba(30, 43, 46, 0.82);
-    backdrop-filter: blur(22px) saturate(140%);
-    -webkit-backdrop-filter: blur(22px) saturate(140%);
-  }
-  .main-nav.open { display: flex; }
-  .main-nav ul { flex-direction: column; gap: 26px; }
-  .main-nav ul li { opacity: 0; transform: translateY(10px); animation: navLinkIn 0.4s ease forwards; }
-  .main-nav.open ul li:nth-child(1) { animation-delay: 0.05s; }
-  .main-nav.open ul li:nth-child(2) { animation-delay: 0.1s; }
-  .main-nav.open ul li:nth-child(3) { animation-delay: 0.15s; }
-  .main-nav.open ul li:nth-child(4) { animation-delay: 0.2s; }
-  .main-nav.open ul li:nth-child(5) { animation-delay: 0.25s; }
-  .main-nav a:not(.nav-cta) { color: #fff !important; font-size: 1.3rem; }
-  .nav-toggle { display: flex; z-index: 210; }
-}
-@keyframes navLinkIn { to { opacity: 1; transform: translateY(0); } }
-
-/* ---------- Responsive ---------- */
-@media (min-width: 700px) {
-  .eyebrow-vertical { display: block; }
-  .scroll-cue { display: flex; }
-}
-
-@media (max-width: 860px) {
-  .story-grid, .feature-grid, .contact-grid, .service-row {
-    grid-template-columns: 1fr;
-  }
-  .service-row.reverse .service-text,
-  .service-row.reverse .service-visual { order: initial; }
-  .footer-inner { grid-template-columns: 1fr; }
-  .hero-slider { height: auto; min-height: 100vh; }
-  .slide-inner { padding-top: 90px; padding-bottom: 40px; }
-  .slide-bg img { animation: none !important; }
-  .glass-text {
-    padding: 24px 28px;
-    max-width: 100%;
-    margin: 0 16px;
-  }
-  .feature.offset {
-    transform: translateY(0) !important;
-  }
-  .feature.offset.in-view {
-    transform: translateY(0) !important;
-  }
-
-  /* ---------- MOBILE NAV - FIXED ---------- */
-  /* Hide the desktop nav */
-  .main-nav {
     display: none !important;
   }
 
-  /* Mobile overlay nav - always visible when open */
   .main-nav.open {
     display: flex !important;
     position: fixed;
@@ -1039,7 +1005,6 @@ a:focus-visible, button:focus-visible {
     transform: scale(1.05);
   }
 
-  /* Nav CTA inside mobile menu */
   .main-nav.open .nav-cta {
     font-size: 1rem;
     padding: 14px 40px;
@@ -1047,13 +1012,10 @@ a:focus-visible, button:focus-visible {
     display: inline-block;
   }
 
-  /* Remove the underline effect on mobile since we have color/scale */
   .main-nav.open a:not(.nav-cta)::after {
     display: none !important;
   }
 
-  /* ---------- HAMBURGER BUTTON - FIXED ---------- */
-  /* Always show the hamburger on mobile */
   .nav-toggle {
     display: flex !important;
     background: none;
@@ -1079,12 +1041,10 @@ a:focus-visible, button:focus-visible {
     transform-origin: center;
   }
 
-  /* When scrolled, hamburger becomes dark */
   .site-header.scrolled .nav-toggle span {
     background: var(--slate-dark);
   }
 
-  /* When menu is open, hamburger becomes white X */
   .nav-toggle[aria-expanded="true"] span {
     background: #fff !important;
   }
@@ -1100,7 +1060,6 @@ a:focus-visible, button:focus-visible {
     transform: translateY(-10px) rotate(-45deg);
   }
 
-  /* Body scroll lock when menu open */
   body.menu-open {
     overflow: hidden !important;
   }
@@ -1113,7 +1072,7 @@ a:focus-visible, button:focus-visible {
   }
 }
 
-/* ---------- NAV TOGGLE - BASE STYLES (outside media query so it applies) ---------- */
+/* ---------- NAV TOGGLE - BASE STYLES ---------- */
 .nav-toggle {
   display: none;
   background: none;
@@ -1139,12 +1098,10 @@ a:focus-visible, button:focus-visible {
   transform-origin: center;
 }
 
-/* Scrolled state */
 .site-header.scrolled .nav-toggle span {
   background: var(--slate-dark);
 }
 
-/* Menu open state */
 .nav-toggle[aria-expanded="true"] span {
   background: #fff !important;
 }
@@ -1160,7 +1117,6 @@ a:focus-visible, button:focus-visible {
   transform: translateY(-10px) rotate(-45deg);
 }
 
-/* ---------- MAIN NAV - BASE STYLES ---------- */
 .main-nav {
   display: flex;
   align-items: center;
