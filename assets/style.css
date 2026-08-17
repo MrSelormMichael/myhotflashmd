@@ -500,7 +500,7 @@ section .btn-outline:hover { color: #fff !important; }
 .marquee-inner {
   display: flex;
   width: calc(var(--marquee-w) * 2);
-  animation: marqueeScroll 25s linear infinite;
+  animation: marqueeScroll 50s linear infinite;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
