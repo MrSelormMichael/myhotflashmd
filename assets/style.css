@@ -879,9 +879,56 @@ section.alt { background: var(--ivory); }
 .faq-item[open] summary::after { content: '\2212'; }
 .faq-item .faq-answer { padding: 0 28px 24px; color: var(--text-soft); }
 
-/* ---------- Footer ---------- */
-.site-footer { background: var(--ink); color: #e6eef0; padding: 56px 0 28px; }
-.footer-inner { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; margin-bottom: 36px; }
+/* ---------- FOOTER with BLOB-SHAPED BADGES ---------- */
+.site-footer {
+  background: var(--ink);
+  color: #e6eef0;
+  padding: 56px 0 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* blob background in footer */
+.footer-blob-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.footer-blob-bg .blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.35;
+  width: 55%;
+  aspect-ratio: 1/1;
+  background: radial-gradient(circle at 30% 30%, var(--pink-hot), var(--plum) 70%, transparent 80%);
+  top: -25%;
+  right: -10%;
+  animation: auroraDrift 22s ease-in-out infinite alternate;
+}
+.footer-blob-bg .blob2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+  width: 45%;
+  aspect-ratio: 1/1;
+  background: radial-gradient(circle at 70% 70%, var(--plum-bright), var(--pink-hot) 60%, transparent 80%);
+  bottom: -25%;
+  left: -10%;
+  animation: auroraDrift 26s ease-in-out infinite alternate-reverse;
+}
+
+.footer-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 36px;
+}
 .footer-inner img { height: 36px; margin-bottom: 14px; filter: brightness(0) invert(1); opacity: 0.92; }
 .footer-inner p { color: #b9c9cd; font-size: 0.92rem; }
 .footer-col h4 { color: #fff; font-size: 0.9rem; font-variant: small-caps; letter-spacing: 0.05em; margin-bottom: 16px; }
@@ -889,7 +936,87 @@ section.alt { background: var(--ivory); }
 .footer-col li { margin-bottom: 10px; }
 .footer-col a { color: #cfe0e3; font-size: 0.95rem; }
 .footer-col a:hover { color: var(--pink-light); }
-.footer-bottom { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 22px; text-align: center; color: #93a8ac; font-size: 0.82rem; }
+
+/* ---- BLOB-SHAPED BADGES ---- */
+.badge-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 40px 60px;
+  padding: 30px 0 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Each badge is a blob shape like profile.jpeg */
+.badge-blob {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 58% 42% 50% 50% / 50% 55% 45% 50%;
+  overflow: hidden;
+  transition: all 0.4s var(--ease);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  border: 2px solid rgba(255,255,255,0.15);
+  flex-shrink: 0;
+  cursor: default;
+}
+
+/* Different blob shapes for variety */
+.badge-blob:nth-child(1) {
+  border-radius: 62% 38% 48% 52% / 58% 52% 48% 42%;
+}
+
+.badge-blob:nth-child(2) {
+  border-radius: 48% 52% 42% 58% / 52% 48% 52% 48%;
+}
+
+.badge-blob:hover {
+  transform: scale(1.06) rotate(-2deg);
+  box-shadow: 0 12px 40px rgba(242, 107, 143, 0.3);
+  border-color: var(--pink-hot);
+}
+
+.badge-blob img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s var(--ease);
+}
+
+.badge-blob:hover img {
+  transform: scale(1.08);
+}
+
+/* Glow ring around blob on hover */
+.badge-blob::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--pink-hot), var(--plum));
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.badge-blob:hover::after {
+  opacity: 0.6;
+}
+
+.footer-bottom {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding-top: 22px;
+  text-align: center;
+  color: #93a8ac;
+  font-size: 0.82rem;
+}
 
 /* ---------- Focus ---------- */
 a:focus-visible, button:focus-visible {
@@ -923,6 +1050,16 @@ a:focus-visible, button:focus-visible {
   }
   .feature.offset.in-view {
     transform: translateY(0) !important;
+  }
+
+  /* Badge responsive */
+  .badge-row {
+    gap: 24px 30px;
+    padding: 20px 0 16px;
+  }
+  .badge-blob {
+    width: 100px;
+    height: 100px;
   }
 
   .main-nav {
